@@ -1,13 +1,12 @@
 using Microsoft.AspNetCore.Mvc;
 using stock_manager_api.Dto;
-using stock_manager_api.Models;
 using stock_manager_api.Repository;
 
 namespace stock_manager_api.Controllers
 {
     [ApiController]
     [Route("cars")]
-    public class CarController: Controller 
+    public class CarController : Controller 
     {
         private readonly CarRepository carRepository;
         public CarController(CarRepository repository) { carRepository = repository; }
@@ -53,9 +52,9 @@ namespace stock_manager_api.Controllers
 
                 return CreatedAtRoute("GetCars", createdCar);
             }
-            catch (Exception ex)
+            catch (Exception)
             {
-                return StatusCode(500, new { message = ex.ToString() });
+                return StatusCode(500, new { message = "Internal Server Error" });
             }
         }
 

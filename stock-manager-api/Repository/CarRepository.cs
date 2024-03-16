@@ -33,14 +33,16 @@ namespace stock_manager_api.Repository
             _context.Cars.Add(insertCar);
             _context.SaveChanges();
 
-            Car insertedCar = _context.Cars.OrderByDescending(e => e.CarId).First();
+            Car insertedCar = _context.Cars
+                .OrderByDescending(car => car.CarId)
+                .First();
 
             return insertedCar.ToDto();
         }
 
         public void Delete(int carId)
         {
-            Car? carById = _context.Cars.Find(carId) 
+            Car carById = _context.Cars.Find(carId) 
                 ?? throw new KeyNotFoundException(NotFound(carId));
 
             _context.Remove(carById);
@@ -49,7 +51,7 @@ namespace stock_manager_api.Repository
 
         public ResponseCarDto Update(InsertCarDto resource, int carId)
         {
-            Car? carById = _context.Cars.Find(carId) 
+            Car carById = _context.Cars.Find(carId) 
                 ?? throw new KeyNotFoundException(NotFound(carId));
 
             carById.Plate = resource.Plate;
