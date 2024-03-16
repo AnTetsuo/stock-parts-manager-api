@@ -1,4 +1,5 @@
 
+using stock_manager_api;
 using stock_manager_api.Models;
 using stock_manager_api.Repository;
 
@@ -8,6 +9,7 @@ builder.Services.AddControllers();
 builder.Services.AddDbContext<StockManagerContext>();
 builder.Services.AddScoped<IStockManagerContext, StockManagerContext>();
 builder.Services.AddScoped<CarRepository>();
+builder.Services.AddScoped<ClientRepository>();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 

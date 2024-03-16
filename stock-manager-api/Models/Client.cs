@@ -1,5 +1,6 @@
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using stock_manager_api.Dto;
 
 namespace stock_manager_api.Models
 {
@@ -13,5 +14,14 @@ namespace stock_manager_api.Models
         public required string Name { get; set; }
 
         public ICollection<Budget>? Budgets { get; set; }
+
+        public ResponseClientDto ToDto()
+        {
+            return new ResponseClientDto
+            {
+                id = ClientId,
+                name = Name,
+            };
+        }
     }
 }
