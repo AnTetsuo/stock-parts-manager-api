@@ -10,6 +10,7 @@ builder.Services.AddDbContext<StockManagerContext>();
 builder.Services.AddScoped<IStockManagerContext, StockManagerContext>();
 builder.Services.AddScoped<CarRepository>();
 builder.Services.AddScoped<ClientRepository>();
+builder.Services.AddScoped<AutoPartRepository>();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 

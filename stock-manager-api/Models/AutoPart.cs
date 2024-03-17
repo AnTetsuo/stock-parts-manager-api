@@ -1,5 +1,6 @@
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using stock_manager_api.Dto;
 
 namespace stock_manager_api.Models
 {
@@ -18,5 +19,15 @@ namespace stock_manager_api.Models
         [Column("budgeted")]
         public required int Budgeted { get; set; }
 
+        public ResponseAutoPartDto ToDto()
+        {
+            return new ResponseAutoPartDto 
+            {
+                id = AutoPartId,
+                name = Name,
+                budgeted = Budgeted,
+                stock = Stock 
+            };
+        } 
     }
 }
