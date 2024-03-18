@@ -1,5 +1,6 @@
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using stock_manager_api.Dto;
 
 namespace stock_manager_api.Models 
 {
@@ -21,11 +22,20 @@ namespace stock_manager_api.Models
         public required int Quantity { get; set; }
 
         [ForeignKey("BudgetId")]
-        public Budget? Budget { get; set; }
+        public required Budget Budget { get; set; }
 
         [ForeignKey("AutoPartId")]
-        public AutoPart? AutoPart { get; set; }
+        public required AutoPart AutoPart { get; set; }
 
+        public ResponseBudgetedAutoPartsDto ToDto()
+        {
+            return new ResponseBudgetedAutoPartsDto
+            {  
+                id = AutoPartId,
+                name = AutoPart.Name,
+                quantity = Quantity,
+            };
+        }
     }
 }
 

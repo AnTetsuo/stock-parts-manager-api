@@ -7,6 +7,21 @@ namespace stock_manager_api.Dto
         public int Budgeted { get; set; }
     }
 
+    public class AddAutoPartToBudgetDto
+    {
+        public required int Id { get; set; }
+        public required string Name { get; set; }
+        public required int Quantity { get; set; }
+    }
+
+    public class ResponseBudgetedAutoPartsDto
+    {
+        public required int id { get; set; }
+        public required string name { get; set; }
+        public required int quantity { get; set; }
+    }
+
+
     public class ResponseAutoPartDto
     {
         public required int id { get; set; }

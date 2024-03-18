@@ -1,6 +1,5 @@
-
+using System.Text.Json.Serialization;
 using stock_manager_api;
-using stock_manager_api.Models;
 using stock_manager_api.Repository;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -11,8 +10,12 @@ builder.Services.AddScoped<IStockManagerContext, StockManagerContext>();
 builder.Services.AddScoped<CarRepository>();
 builder.Services.AddScoped<ClientRepository>();
 builder.Services.AddScoped<AutoPartRepository>();
+builder.Services.AddScoped<BudgetRepository>();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
+builder.Services.AddControllersWithViews()
+                .AddJsonOptions(x => x
+                    .JsonSerializerOptions.ReferenceHandler = ReferenceHandler.IgnoreCycles);
 
 //Load .env file
 DotNetEnv.Env.TraversePath().Load();
