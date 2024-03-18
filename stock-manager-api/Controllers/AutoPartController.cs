@@ -1,4 +1,3 @@
-using System.Net.NetworkInformation;
 using Microsoft.AspNetCore.Mvc;
 using stock_manager_api.Dto;
 using stock_manager_api.Repository;
