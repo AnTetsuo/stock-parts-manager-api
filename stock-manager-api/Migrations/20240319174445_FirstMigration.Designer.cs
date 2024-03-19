@@ -11,7 +11,7 @@ using stock_manager_api.Repository;
 namespace stock_manager_api.Migrations
 {
     [DbContext(typeof(StockManagerContext))]
-    [Migration("20240316175425_FirstMigration")]
+    [Migration("20240319174445_FirstMigration")]
     partial class FirstMigration
     {
         /// <inheritdoc />
@@ -49,6 +49,43 @@ namespace stock_manager_api.Migrations
                     b.HasKey("AutoPartId");
 
                     b.ToTable("AutoParts");
+
+                    b.HasData(
+                        new
+                        {
+                            AutoPartId = 1,
+                            Budgeted = 0,
+                            Name = "BRACKET-ENGINE MOUNTING",
+                            Stock = 10
+                        },
+                        new
+                        {
+                            AutoPartId = 2,
+                            Budgeted = 0,
+                            Name = "INSULATOR ASSY-ENGINE MOUNTING",
+                            Stock = 10
+                        },
+                        new
+                        {
+                            AutoPartId = 3,
+                            Budgeted = 0,
+                            Name = "BLOCK ASSY-CYLINDER",
+                            Stock = 10
+                        },
+                        new
+                        {
+                            AutoPartId = 4,
+                            Budgeted = 0,
+                            Name = "SEAL-OIL LEVEL GAUGE GUIDE",
+                            Stock = 10
+                        },
+                        new
+                        {
+                            AutoPartId = 5,
+                            Budgeted = 0,
+                            Name = "COLLECTOR-INTAKE MANIFOLD",
+                            Stock = 10
+                        });
                 });
 
             modelBuilder.Entity("stock_manager_api.Models.Budget", b =>
@@ -123,6 +160,33 @@ namespace stock_manager_api.Migrations
                     b.HasKey("CarId");
 
                     b.ToTable("Cars");
+
+                    b.HasData(
+                        new
+                        {
+                            CarId = 1,
+                            Plate = "KLV0553"
+                        },
+                        new
+                        {
+                            CarId = 2,
+                            Plate = "BLN4551"
+                        },
+                        new
+                        {
+                            CarId = 3,
+                            Plate = "LBT0505"
+                        },
+                        new
+                        {
+                            CarId = 4,
+                            Plate = "ASF6752"
+                        },
+                        new
+                        {
+                            CarId = 5,
+                            Plate = "JNQ7346"
+                        });
                 });
 
             modelBuilder.Entity("stock_manager_api.Models.Client", b =>
@@ -142,6 +206,33 @@ namespace stock_manager_api.Migrations
                     b.HasKey("ClientId");
 
                     b.ToTable("Clients");
+
+                    b.HasData(
+                        new
+                        {
+                            ClientId = 1,
+                            Name = "Camila Tristão"
+                        },
+                        new
+                        {
+                            ClientId = 2,
+                            Name = "Teobaldo Albano"
+                        },
+                        new
+                        {
+                            ClientId = 3,
+                            Name = "Ivan Roval"
+                        },
+                        new
+                        {
+                            ClientId = 4,
+                            Name = "Fabricio Eliseu"
+                        },
+                        new
+                        {
+                            ClientId = 5,
+                            Name = "Arnaldo Reynaldo"
+                        });
                 });
 
             modelBuilder.Entity("stock_manager_api.Models.Budget", b =>
@@ -172,7 +263,7 @@ namespace stock_manager_api.Migrations
                         .IsRequired();
 
                     b.HasOne("stock_manager_api.Models.Budget", "Budget")
-                        .WithMany()
+                        .WithMany("BudgetedParts")
                         .HasForeignKey("BudgetId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
@@ -180,6 +271,11 @@ namespace stock_manager_api.Migrations
                     b.Navigation("AutoPart");
 
                     b.Navigation("Budget");
+                });
+
+            modelBuilder.Entity("stock_manager_api.Models.Budget", b =>
+                {
+                    b.Navigation("BudgetedParts");
                 });
 
             modelBuilder.Entity("stock_manager_api.Models.Car", b =>
