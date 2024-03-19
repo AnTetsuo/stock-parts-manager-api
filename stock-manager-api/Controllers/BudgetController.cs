@@ -71,12 +71,16 @@ namespace stock_manager_api.Controllers
 
                 return CreatedAtRoute("GetBudget", editedBduget);
             }
+            catch (ArgumentException outOfStockEx)
+            {
+                return Accepted(outOfStockEx.Message);
+            }
             catch (KeyNotFoundException budgetNotFound)
             {
                 return NotFound(budgetNotFound.Message);
             }
             catch (Exception)
-            {
+            {   
                 return StatusCode(500, new { message = "Internal Server Error" });
             }
         }

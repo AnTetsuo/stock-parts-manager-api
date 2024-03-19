@@ -25,15 +25,7 @@ namespace stock_manager_api
 
         public ResponseBudgetDto GetById(int budgetId)
         {
-            Budget budgetWithIdExist = _context.Budgets.Find(budgetId)
-                ?? throw new KeyNotFoundException(BudgetNotFound(budgetId));
-            
-            Budget budgetById = _context.Budgets.Where(budget => budget.BudgetId == budgetId)
-                .Include(budget => budget.Car)
-                .Include(budget => budget.Client)                
-                .Include(budget => budget.BudgetedParts)
-                .ThenInclude(budgetedParts => budgetedParts.AutoPart)
-                .First();
+            Budget budgetById = GetBudgetById(budgetId);
             
             return budgetById.ToDto();
         }
@@ -52,7 +44,7 @@ namespace stock_manager_api
             Budget createBudget = new() { Client = client, Car = car, BudgetedParts = [] };
             _context.Budgets.Add(createBudget);
 
-            ManageBudgeting(budget.Parts, autoparts, createBudget);
+            Budgeting(budget.Parts, autoparts, createBudget);
 
             _context.SaveChanges();
 
@@ -61,58 +53,64 @@ namespace stock_manager_api
 
         public void Delete(int budgetId)
         {
-            Budget budgetWithIdExist = _context.Budgets.Find(budgetId)
-                ?? throw new KeyNotFoundException(BudgetNotFound(budgetId));
+            Budget budget = GetBudgetById(budgetId);
             
-            Budget budgetById = _context.Budgets.Where(budget => budget.BudgetId == budgetId)
-                .Include(budget => budget.BudgetedParts)
-                .ThenInclude(budgetedParts => budgetedParts.AutoPart)
-                .First();
-            
-            IEnumerable<BudgetedPart> budgeted = budgetById.BudgetedParts.Select(e => e);
-            IEnumerable<AutoPart> stock = budgetById.BudgetedParts.Select(e => e.AutoPart);
+            IEnumerable<BudgetedPart> budgeted = budget.BudgetedParts.Select(e => e);
+            IEnumerable<AutoPart> stock = budget.BudgetedParts.Select(e => e.AutoPart);
 
             Unbudgeting(budgeted, stock);
 
-            budgetById.BudgetedParts.Select(_context.BudgetedParts.Remove);
+            budget.BudgetedParts.Select(_context.BudgetedParts.Remove);
 
-            _context.Remove(budgetById);
+            _context.Remove(budget);
             _context.SaveChanges();
         }
 
-        public ResponseBudgetDto Update(InsertBudgetDto budget, int budgetId)
+        public ResponseBudgetDto Update(InsertBudgetDto updatedBudget, int budgetId)
         {
-            throw new NotImplementedException();
+            Budget budget = GetBudgetById(budgetId);
+
+            IEnumerable<BudgetedPart> budgeted = budget.BudgetedParts.Select(e => e);
+            IEnumerable<AutoPart> stock = budget.BudgetedParts.Select(e => e.AutoPart);
+            
+            Unbudgeting(budgeted, stock);
+
+            budget.BudgetedParts.Select(_context.BudgetedParts.Remove);
+            budget.BudgetedParts = [];
+            _context.Update(budget);
+
+            Budgeting(updatedBudget.Parts, stock, budget);
+
+            _context.SaveChanges();
+
+            return budget.ToDto();
         }
 
-        public void ManageBudgeting(
-            IEnumerable<AddAutoPartToBudgetDto> requestPart, IEnumerable<AutoPart> stockPart, Budget budget)
+        public void Budgeting(IEnumerable<AddAutoPartToBudgetDto> requestParts, IEnumerable<AutoPart> inStockParts, Budget budget)
         {
-            var checkStock = requestPart.Zip(stockPart, (need, have) => new { req = need, stock = have });
+            var compare = requestParts.Zip(inStockParts, (a, b) => new { requested = a, inStock = b });
 
-            foreach(var check in checkStock)
+            foreach(var comp in compare)
             {
-                if (check.req.Quantity > check.stock.Stock)
+                if (comp.requested.Quantity > comp.inStock.Stock)
                 {
-                    string message = $"autopart of id {check.stock.AutoPartId} {check.stock.Name} is out of stock for this budget";
+                    string message = $"autopart of id {comp.inStock.AutoPartId} {comp.inStock.Name} doesn't have enough stock for this budget";
                     throw new ArgumentException(message);
                 }
 
+                comp.inStock.Stock -= comp.requested.Quantity;
+                comp.inStock.Budgeted += comp.requested.Quantity;
+                _context.Update(comp.inStock);
+
                 BudgetedPart partToBudget = new()
                 {
-                    AutoPart = check.stock,
-                    Quantity = check.req.Quantity,
-                    Budget = budget,
+                    AutoPart = comp.inStock,
+                    Quantity = comp.requested.Quantity,
+                    Budget = budget
                 };
-
-                check.stock.Stock -= check.req.Quantity;
-                check.stock.Budgeted += check.req.Quantity;
-                _context.Update(check.stock);
-
                 _context.BudgetedParts.Add(partToBudget);
             }
         }
-
         public void Unbudgeting(IEnumerable<BudgetedPart> budgetedParts, IEnumerable<AutoPart> stockParts)
         {
             var unbugdeting = budgetedParts.Zip(stockParts, (remove, add) => new { budget = remove, stock = add });
@@ -123,6 +121,21 @@ namespace stock_manager_api
                 remove.stock.Stock += remove.budget.Quantity;
                 _context.Update(remove.stock);
             }
+        }
+
+        public Budget GetBudgetById(int budgetId)
+        {
+            Budget budgetWithIdExists = _context.Budgets.Find(budgetId)
+                ?? throw new KeyNotFoundException(BudgetNotFound(budgetId));
+            
+            Budget budgetById = _context.Budgets.Where(budget => budget.BudgetId == budgetId)
+                .Include(budget => budget.Car)
+                .Include(budget => budget.Client)                
+                .Include(budget => budget.BudgetedParts)
+                .ThenInclude(budgetedParts => budgetedParts.AutoPart)
+                .First();
+
+            return budgetById;
         }
 
         public static string BudgetNotFound(int id)
