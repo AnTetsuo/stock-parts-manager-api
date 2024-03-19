@@ -1,9 +1,14 @@
+using System.ComponentModel.DataAnnotations;
+
 namespace stock_manager_api.Dto
 {
     public class InsertBudgetDto
     {
+        [Required]
         public required ResponseClientDto Client { get; set; }
+        [Required]
         public required ResponseCarDto Car { get; set; }
+        [Required]
         public required IEnumerable<AddAutoPartToBudgetDto> Parts { get; set; }
     }
 
