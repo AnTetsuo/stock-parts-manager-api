@@ -46,7 +46,6 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI(swag =>
         {
             swag.SwaggerEndpoint("/swagger/v1/swagger.json","Stock Manager Api");
-            swag.RoutePrefix = string.Empty;
         }
     );
 }
