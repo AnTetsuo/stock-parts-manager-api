@@ -1,6 +1,4 @@
 using System.ComponentModel.DataAnnotations;
-using System.Numerics;
-using Microsoft.AspNetCore.Mvc;
 
 namespace stock_manager_api.Dto
 {

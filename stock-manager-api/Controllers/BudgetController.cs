@@ -1,5 +1,4 @@
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore.Metadata.Internal;
 using stock_manager_api.Dto;
 
 namespace stock_manager_api.Controllers
