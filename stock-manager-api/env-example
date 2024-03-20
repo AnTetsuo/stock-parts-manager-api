@@ -1,0 +1,4 @@
+DATABASE=stock_parts
+USER=person
+PASSWORD=secret
+HOST_ADDRESS=localhost
